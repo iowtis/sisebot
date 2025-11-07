@@ -48,11 +48,6 @@ app.get('/api/price/:symbol', async (req, res) => {
       success: true,
       data: spotData
     });
-
-    // 슬랙으로도 전송 (비동기, 응답에 영향 없음)
-    sendToSlack(symbol, spotData, null).catch(err => {
-      console.error('슬랙 전송 실패:', err.message);
-    });
   } catch (error) {
     res.status(500).json({ 
       error: '서버 오류가 발생했습니다.',
@@ -79,11 +74,6 @@ app.get('/api/futures/:symbol', async (req, res) => {
       success: true,
       data: futuresData
     });
-
-    // 슬랙으로도 전송 (비동기, 응답에 영향 없음)
-    sendToSlack(symbol, null, futuresData).catch(err => {
-      console.error('슬랙 전송 실패:', err.message);
-    });
   } catch (error) {
     res.status(500).json({ 
       error: '서버 오류가 발생했습니다.',
@@ -108,11 +98,6 @@ app.get('/api/all/:symbol', async (req, res) => {
         spot: spotData,
         futures: futuresData
       }
-    });
-
-    // 슬랙으로도 전송 (비동기, 응답에 영향 없음)
-    sendToSlack(symbol, spotData, futuresData).catch(err => {
-      console.error('슬랙 전송 실패:', err.message);
     });
   } catch (error) {
     res.status(500).json({ 
