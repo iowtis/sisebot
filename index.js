@@ -50,38 +50,44 @@ export async function getPriceByAPI(symbol, category = 'spot') {
   }
 }
 
-// 가격 정보 출력
-function displayPrice(priceData, categoryName) {
+// 가격 정보를 텍스트 형식으로 포맷팅하는 함수 (export)
+export function formatPriceAsText(priceData, categoryName) {
   if (!priceData) {
-    console.log(`❌ ${categoryName} 가격 정보를 가져올 수 없습니다.`);
-    return;
+    return `❌ ${categoryName} 가격 정보를 가져올 수 없습니다.`;
   }
   
   const categoryLabel = categoryName === '현물' ? '📊 현물 거래소' : '📈 선물 거래소';
-  console.log(`\n${categoryLabel} 시세 정보`);
-  console.log('━'.repeat(50));
-  console.log(`심볼: ${priceData.symbol}`);
-  console.log(`현재가: $${parseFloat(priceData.lastPrice).toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}`);
-  console.log(`24시간 고가: $${parseFloat(priceData.high24h).toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}`);
-  console.log(`24시간 저가: $${parseFloat(priceData.low24h).toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}`);
-  console.log(`24시간 거래량: ${parseFloat(priceData.volume24h).toLocaleString('ko-KR')}`);
+  let text = `\n${categoryLabel} 시세 정보\n`;
+  text += '━'.repeat(50) + '\n';
+  text += `심볼: ${priceData.symbol}\n`;
+  text += `현재가: $${parseFloat(priceData.lastPrice).toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}\n`;
+  text += `24시간 고가: $${parseFloat(priceData.high24h).toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}\n`;
+  text += `24시간 저가: $${parseFloat(priceData.low24h).toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}\n`;
+  text += `24시간 거래량: ${parseFloat(priceData.volume24h).toLocaleString('ko-KR')}\n`;
   
   const changePercent = (parseFloat(priceData.change24h) * 100).toFixed(2);
   const changeColor = parseFloat(changePercent) >= 0 ? '🟢' : '🔴';
-  console.log(`24시간 변동률: ${changeColor} ${changePercent}%`);
+  text += `24시간 변동률: ${changeColor} ${changePercent >= 0 ? '+' : ''}${changePercent}%\n`;
   
   // 선물 거래소의 경우 추가 정보 표시
   if (priceData.category === 'linear' && priceData.fundingRate !== undefined) {
     const fundingRate = (parseFloat(priceData.fundingRate) * 100).toFixed(4);
-    console.log(`펀딩 수수료율: ${fundingRate}%`);
+    text += `펀딩 수수료율: ${fundingRate}%\n`;
     if (priceData.openInterest) {
-      console.log(`미결제약정: ${parseFloat(priceData.openInterest).toLocaleString('ko-KR')}`);
+      text += `미결제약정: ${parseFloat(priceData.openInterest).toLocaleString('ko-KR')}\n`;
     }
   }
   
-  console.log('━'.repeat(50));
+  text += '━'.repeat(50) + '\n';
   const urlType = priceData.category === 'linear' ? 'futures' : 'trade/usdt';
-  console.log(`\nURL: https://www.bybit.com/${urlType}/${priceData.symbol}\n`);
+  text += `\nURL: https://www.bybit.com/${urlType}/${priceData.symbol}\n`;
+  
+  return text;
+}
+
+// 가격 정보 출력 (콘솔용)
+function displayPrice(priceData, categoryName) {
+  console.log(formatPriceAsText(priceData, categoryName));
 }
 
 // 메인 함수

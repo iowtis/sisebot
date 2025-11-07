@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
-import { getPriceByAPI } from './index.js';
+import { getPriceByAPI, formatPriceAsText } from './index.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -34,16 +34,25 @@ async function sendToSlack(symbol, spotData, futuresData) {
 app.get('/api/price/:symbol', async (req, res) => {
   try {
     const symbol = req.params.symbol.toUpperCase();
+    const format = req.query.format || 'json'; // format 파라미터 (기본값: json)
     const spotData = await getPriceByAPI(symbol, 'spot');
     
     if (!spotData) {
+      if (format === 'text') {
+        return res.status(404).type('text/plain').send(`❌ 가격 정보를 찾을 수 없습니다. (${symbol}USDT)`);
+      }
       return res.status(404).json({ 
         error: '가격 정보를 찾을 수 없습니다.',
         symbol: `${symbol}USDT`
       });
     }
     
-    // 응답 전송
+    // 텍스트 형식 요청인 경우
+    if (format === 'text') {
+      return res.type('text/plain').send(formatPriceAsText(spotData, '현물'));
+    }
+    
+    // JSON 형식 응답 (기본)
     res.json({
       success: true,
       data: spotData
@@ -60,16 +69,25 @@ app.get('/api/price/:symbol', async (req, res) => {
 app.get('/api/futures/:symbol', async (req, res) => {
   try {
     const symbol = req.params.symbol.toUpperCase();
+    const format = req.query.format || 'json'; // format 파라미터 (기본값: json)
     const futuresData = await getPriceByAPI(symbol, 'linear');
     
     if (!futuresData) {
+      if (format === 'text') {
+        return res.status(404).type('text/plain').send(`❌ 가격 정보를 찾을 수 없습니다. (${symbol}USDT)`);
+      }
       return res.status(404).json({ 
         error: '가격 정보를 찾을 수 없습니다.',
         symbol: `${symbol}USDT`
       });
     }
     
-    // 응답 전송
+    // 텍스트 형식 요청인 경우
+    if (format === 'text') {
+      return res.type('text/plain').send(formatPriceAsText(futuresData, '선물'));
+    }
+    
+    // JSON 형식 응답 (기본)
     res.json({
       success: true,
       data: futuresData
@@ -86,12 +104,29 @@ app.get('/api/futures/:symbol', async (req, res) => {
 app.get('/api/all/:symbol', async (req, res) => {
   try {
     const symbol = req.params.symbol.toUpperCase();
+    const format = req.query.format || 'json'; // format 파라미터 (기본값: json)
     const [spotData, futuresData] = await Promise.all([
       getPriceByAPI(symbol, 'spot'),
       getPriceByAPI(symbol, 'linear')
     ]);
     
-    // 응답 전송
+    // 텍스트 형식 요청인 경우
+    if (format === 'text') {
+      let text = '';
+      if (spotData) {
+        text += formatPriceAsText(spotData, '현물');
+      } else {
+        text += `❌ 현물 가격 정보를 가져올 수 없습니다.\n\n`;
+      }
+      if (futuresData) {
+        text += formatPriceAsText(futuresData, '선물');
+      } else {
+        text += `❌ 선물 가격 정보를 가져올 수 없습니다.\n`;
+      }
+      return res.type('text/plain').send(text);
+    }
+    
+    // JSON 형식 응답 (기본)
     res.json({
       success: true,
       data: {
