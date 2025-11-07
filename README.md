@@ -140,6 +140,19 @@ sise/
 ### 웹 서버 모드
 터미널에서 `Ctrl + C`를 눌러 서버를 종료하세요.
 
+## Railway 배포
+
+Railway에서 환경 변수를 설정하여 배포할 수 있습니다.
+
+### 환경 변수 설정
+
+Railway 대시보드에서 다음 환경 변수를 설정하세요:
+
+- `SLACK_WEBHOOK_URL`: 슬랙 Incoming Webhook URL (필수)
+- `PORT`: 서버 포트 (선택, 기본값: 3000)
+
+자세한 배포 방법은 [RAILWAY.md](./RAILWAY.md)를 참고하세요.
+
 ## 기술 스택
 
 - **Node.js** - 런타임 환경

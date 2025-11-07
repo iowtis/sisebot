@@ -1,4 +1,5 @@
 node_modules/
+RAILWAY.md
 .env
 .DS_Store
 *.log

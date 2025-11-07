@@ -15,6 +15,21 @@ app.use(express.json());
 // 정적 파일 제공 (웹 인터페이스)
 app.use(express.static('public'));
 
+// 슬랙으로 메시지 전송하는 헬퍼 함수
+async function sendToSlack(symbol, spotData, futuresData) {
+  if (!SLACK_WEBHOOK_URL) {
+    return;
+  }
+
+  try {
+    const slackMessage = formatSlackMessage(symbol, spotData, futuresData);
+    await axios.post(SLACK_WEBHOOK_URL, slackMessage);
+    console.log(`✅ 슬랙으로 ${symbol} 시세 전송 완료`);
+  } catch (error) {
+    console.error('슬랙 웹훅 전송 오류:', error.message);
+  }
+}
+
 // API 엔드포인트: 현물 시세 조회
 app.get('/api/price/:symbol', async (req, res) => {
   try {
@@ -28,9 +43,15 @@ app.get('/api/price/:symbol', async (req, res) => {
       });
     }
     
+    // 응답 전송
     res.json({
       success: true,
       data: spotData
+    });
+
+    // 슬랙으로도 전송 (비동기, 응답에 영향 없음)
+    sendToSlack(symbol, spotData, null).catch(err => {
+      console.error('슬랙 전송 실패:', err.message);
     });
   } catch (error) {
     res.status(500).json({ 
@@ -53,9 +74,15 @@ app.get('/api/futures/:symbol', async (req, res) => {
       });
     }
     
+    // 응답 전송
     res.json({
       success: true,
       data: futuresData
+    });
+
+    // 슬랙으로도 전송 (비동기, 응답에 영향 없음)
+    sendToSlack(symbol, null, futuresData).catch(err => {
+      console.error('슬랙 전송 실패:', err.message);
     });
   } catch (error) {
     res.status(500).json({ 
@@ -74,12 +101,18 @@ app.get('/api/all/:symbol', async (req, res) => {
       getPriceByAPI(symbol, 'linear')
     ]);
     
+    // 응답 전송
     res.json({
       success: true,
       data: {
         spot: spotData,
         futures: futuresData
       }
+    });
+
+    // 슬랙으로도 전송 (비동기, 응답에 영향 없음)
+    sendToSlack(symbol, spotData, futuresData).catch(err => {
+      console.error('슬랙 전송 실패:', err.message);
     });
   } catch (error) {
     res.status(500).json({ 
@@ -128,20 +161,8 @@ app.post('/webhook/slack', async (req, res) => {
       getPriceByAPI(symbol, 'linear')
     ]);
 
-    // 슬랙 메시지 포맷 생성
-    const slackMessage = formatSlackMessage(symbol, spotData, futuresData);
-
-    // 슬랙 Incoming Webhook으로 전송
-    if (SLACK_WEBHOOK_URL) {
-      try {
-        await axios.post(SLACK_WEBHOOK_URL, slackMessage);
-        console.log(`✅ 슬랙으로 ${symbol} 시세 전송 완료`);
-      } catch (error) {
-        console.error('슬랙 웹훅 전송 오류:', error.message);
-      }
-    } else {
-      console.warn('⚠️  SLACK_WEBHOOK_URL 환경 변수가 설정되지 않았습니다.');
-    }
+    // 슬랙으로 전송
+    await sendToSlack(symbol, spotData, futuresData);
 
   } catch (error) {
     console.error('웹훅 처리 오류:', error.message);
