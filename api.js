@@ -304,6 +304,40 @@ function formatSlackMessage(symbol, spotData, futuresData) {
   };
 }
 
+// 환율 조회 (USD/KRW)
+app.get('/api/exchange-rate', async (req, res) => {
+  try {
+    // 무료 환율 API 사용 (exchangerate-api.com)
+    const response = await axios.get('https://api.exchangerate-api.com/v4/latest/USD');
+    
+    if (response.data && response.data.rates && response.data.rates.KRW) {
+      const krwRate = response.data.rates.KRW;
+      res.json({
+        success: true,
+        rate: krwRate,
+        timestamp: response.data.date || new Date().toISOString()
+      });
+    } else {
+      // API 실패 시 대체 환율 (약 1,350원)
+      res.json({
+        success: true,
+        rate: 1350,
+        timestamp: new Date().toISOString(),
+        note: '기본 환율 사용'
+      });
+    }
+  } catch (error) {
+    // 에러 발생 시 기본 환율 반환
+    console.error('환율 조회 오류:', error.message);
+    res.json({
+      success: true,
+      rate: 1350,
+      timestamp: new Date().toISOString(),
+      note: '기본 환율 사용'
+    });
+  }
+});
+
 // 헬스 체크
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
