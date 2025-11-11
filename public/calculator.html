@@ -15,33 +15,44 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
         }
 
         .container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 900px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            max-width: 1000px;
             width: 100%;
-            padding: 40px;
+            padding: 24px;
+            margin: 20px 0;
         }
 
-        h1 {
+        .nav-link {
             text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .nav-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        .nav-link a:hover {
+            color: #764ba2;
         }
 
         .input-section {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .input-group {
@@ -50,43 +61,46 @@
         }
 
         label {
-            color: #666;
+            color: #6b7280;
             font-weight: 500;
             margin-bottom: 8px;
             font-size: 14px;
         }
 
         input {
-            padding: 12px 15px;
+            padding: 14px 16px;
             font-size: 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
             outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.2s;
+            background: #fafafa;
         }
 
         input:focus {
             border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
 
         button {
-            padding: 15px 30px;
+            padding: 14px 28px;
             font-size: 16px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: 600;
+            transition: all 0.2s;
             width: 100%;
             margin-bottom: 20px;
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
         button:active {
@@ -95,29 +109,38 @@
 
         .result-section {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
         }
 
         .result-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+        .result-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
         }
 
         .result-card h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.2em;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
         .result-item {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e9ecef;
         }
 
         .result-item:last-child {
@@ -125,22 +148,24 @@
         }
 
         .result-label {
-            color: #666;
+            color: #6b7280;
             font-weight: 500;
+            font-size: 14px;
         }
 
         .result-value {
-            color: #333;
-            font-weight: bold;
-            font-size: 1.1em;
+            color: #1a1a1a;
+            font-weight: 600;
+            font-size: 15px;
+            text-align: right;
         }
 
         .result-value.positive {
-            color: #10b981;
+            color: #059669;
         }
 
         .result-value.negative {
-            color: #ef4444;
+            color: #dc2626;
         }
 
         .progress-bar {
@@ -186,24 +211,33 @@
         }
 
         .current-price {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+
+        .current-price:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
         }
 
         .current-price h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.2em;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
         .current-price .price-item {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e9ecef;
         }
 
         .current-price .price-item:last-child {
@@ -211,29 +245,77 @@
         }
 
         .current-price .price-label {
-            color: #666;
+            color: #6b7280;
             font-weight: 500;
+            font-size: 14px;
         }
 
         .current-price .price-value {
-            color: #333;
-            font-weight: bold;
-            font-size: 1.1em;
+            color: #1a1a1a;
+            font-weight: 600;
+            font-size: 15px;
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+                border-radius: 12px;
+                margin: 10px 0;
+            }
+
+            .input-section {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .result-section {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .result-card {
+                padding: 16px;
+            }
+
+            .current-price {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px;
+            }
+
+            .result-item,
+            .current-price .price-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .result-value,
+            .current-price .price-value {
+                text-align: left;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <a href="/" style="color: #667eea; text-decoration: none; font-weight: 500; font-size: 16px;">
-                ← 시세 조회로 돌아가기
-            </a>
+        <div class="nav-link">
+            <a href="/">← 시세 조회로 돌아가기</a>
         </div>
         
         <div class="input-section" style="margin-bottom: 20px;">
             <div class="input-group" style="grid-column: 1 / -1;">
                 <label>심볼</label>
-                <input type="text" id="customSymbol" placeholder="예: BTC, ETH, SOL" style="padding: 12px 15px; font-size: 16px; border: 2px solid #e0e0e0; border-radius: 10px; outline: none; transition: border-color 0.3s;" onchange="selectCustomSymbol()" onkeypress="if(event.key === 'Enter') calculate()" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#e0e0e0'">
+                <input type="text" id="customSymbol" placeholder="예: BTC, ETH, SOL" onchange="selectCustomSymbol()" onkeypress="if(event.key === 'Enter') calculate()">
             </div>
         </div>
 
