@@ -54,7 +54,7 @@
 
         .header {
             background: var(--primary-gradient);
-            padding: 48px 24px 36px;
+            padding: 48px 24px 28px;
             text-align: center;
             color: white;
             position: relative;
@@ -135,9 +135,63 @@
         }
 
         .content {
-            padding: 32px 24px 40px;
+            padding: 32px 24px 80px;
             background: var(--bg-secondary);
             min-height: calc(100vh - 180px);
+        }
+
+        /* 하단 네비게이션 바 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+            z-index: 1000;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            border-radius: 12px;
+            min-width: 0;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .bottom-nav-item:active {
+            background: var(--bg-secondary);
+            transform: scale(0.95);
+        }
+
+        .bottom-nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .bottom-nav-label {
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
         }
 
         .search-box {
@@ -416,10 +470,6 @@
                 padding: 10px 0;
             }
 
-            .nav-link a {
-                font-size: 13px;
-                padding: 8px 16px;
-            }
         }
     </style>
 </head>
@@ -427,11 +477,6 @@
     <div class="container">
         <div class="header">
             <h1>🚀 시세 조회</h1>
-            <div class="nav-link">
-                <a href="/calculator.html">💰 Calculator</a>
-                <a href="/insights.html">💡 인사이트</a>
-                <a href="/ranking.html">🏆 랭킹</a>
-            </div>
         </div>
         
         <div class="content">
@@ -450,6 +495,22 @@
         <div id="results"></div>
         </div>
     </div>
+
+    <!-- 하단 네비게이션 바 -->
+    <nav class="bottom-nav">
+        <a href="/" class="bottom-nav-item active">
+            <div class="bottom-nav-icon">📊</div>
+            <div class="bottom-nav-label">시세</div>
+        </a>
+        <a href="/insights.html" class="bottom-nav-item">
+            <div class="bottom-nav-icon">💡</div>
+            <div class="bottom-nav-label">인사이트</div>
+        </a>
+        <a href="/ranking.html" class="bottom-nav-item">
+            <div class="bottom-nav-icon">🏆</div>
+            <div class="bottom-nav-label">랭킹</div>
+        </a>
+    </nav>
 
     <script>
         async function searchPrice() {
