@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>랭킹</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            background: #ffffff;
+            min-height: 100vh;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 24px 40px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+        }
+
+        h1 {
+            color: white;
+            margin: 0 0 32px 0;
+            font-size: 2rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-link {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-link a {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .nav-link a:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .content {
+            padding: 32px 24px;
+            background: #f8f9fa;
+            min-height: calc(100vh - 200px);
+        }
+
+        .category-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            justify-content: center;
+        }
+
+        .category-btn {
+            padding: 12px 24px;
+            font-size: 15px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .ranking-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .ranking-tab {
+            padding: 12px 20px;
+            font-size: 15px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .ranking-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .ranking-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .ranking-section {
+            display: none;
+        }
+
+        .ranking-section.active {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c33;
+        }
+
+        .ranking-section {
+            margin-bottom: 32px;
+        }
+
+        .ranking-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ranking-list {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.2s;
+        }
+
+        .ranking-item:last-child {
+            border-bottom: none;
+        }
+
+        .ranking-item:hover {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .rank-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .rank-number.top1 {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+        }
+
+        .rank-number.top2 {
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+            color: white;
+        }
+
+        .rank-number.top3 {
+            background: linear-gradient(135deg, #cd7f32 0%, #a0522d 100%);
+            color: white;
+        }
+
+        .rank-number.other {
+            background: #e9ecef;
+            color: #6b7280;
+        }
+
+        .symbol-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .symbol-name {
+            font-weight: 700;
+            font-size: 17px;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .symbol-price {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .symbol-value {
+            text-align: right;
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        .symbol-value.positive {
+            color: #10b981;
+        }
+
+        .symbol-value.negative {
+            color: #ef4444;
+        }
+
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 50px 20px 32px;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+                margin-bottom: 24px;
+            }
+
+            .content {
+                padding: 24px 20px;
+            }
+
+            .category-selector {
+                flex-direction: column;
+            }
+
+            .category-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 40px 16px 28px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
+
+            .content {
+                padding: 20px 16px;
+            }
+
+            .ranking-list {
+                padding: 16px;
+            }
+
+            .ranking-item {
+                padding: 12px 0;
+            }
+
+            .symbol-name {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 랭킹</h1>
+            <div class="nav-link">
+                <a href="/">시세 조회</a>
+                <a href="/calculator.html">Calculator</a>
+                <a href="/insights.html">인사이트</a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="category-selector">
+                <button class="category-btn active" onclick="loadRankings('spot')">현물</button>
+                <button class="category-btn" onclick="loadRankings('linear')">선물</button>
+            </div>
+
+            <div class="ranking-tabs" id="rankingTabs" style="display: none;">
+                <button class="ranking-tab active" onclick="showRanking('gainers')">📈 상승률</button>
+                <button class="ranking-tab" onclick="showRanking('losers')">📉 하락률</button>
+                <button class="ranking-tab" onclick="showRanking('volume')">💰 거래대금</button>
+            </div>
+
+            <div id="error"></div>
+            <div id="loading"></div>
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentCategory = 'spot';
+        let rankingsData = null;
+
+        async function loadRankings(category, event = null) {
+            currentCategory = category;
+            
+            // 버튼 활성화 상태 변경
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === (category === 'spot' ? '현물' : '선물')) {
+                    btn.classList.add('active');
+                }
+            });
+
+            const errorDiv = document.getElementById('error');
+            const loadingDiv = document.getElementById('loading');
+            const resultsDiv = document.getElementById('results');
+            const rankingTabs = document.getElementById('rankingTabs');
+
+            errorDiv.innerHTML = '';
+            resultsDiv.innerHTML = '';
+            rankingTabs.style.display = 'none';
+            loadingDiv.innerHTML = '<div class="loading">🔍 랭킹 조회 중...</div>';
+
+            try {
+                const response = await fetch(`/api/rankings?category=${category}`);
+                const data = await response.json();
+
+                loadingDiv.innerHTML = '';
+
+                if (!data.success) {
+                    errorDiv.innerHTML = `<div class="error">❌ ${data.error || '오류가 발생했습니다.'}</div>`;
+                    return;
+                }
+
+                rankingsData = data.data;
+                
+                // 랭킹 탭 표시
+                rankingTabs.style.display = 'flex';
+                
+                // 데이터 렌더링
+                renderRankings();
+                
+                // 기본으로 상승률 표시
+                showRanking('gainers');
+
+            } catch (error) {
+                loadingDiv.innerHTML = '';
+                errorDiv.innerHTML = `<div class="error">❌ 오류: ${error.message}</div>`;
+            }
+        }
+
+        function renderRankings() {
+            if (!rankingsData) return;
+
+            const resultsDiv = document.getElementById('results');
+            let html = '';
+
+            // 상승률 상위 10개
+            if (rankingsData.gainers && rankingsData.gainers.length > 0) {
+                html += `
+                    <div class="ranking-section" id="gainers-section">
+                        <h2 class="ranking-title">📈 상승률 상위 10</h2>
+                        <div class="ranking-list">
+                            ${rankingsData.gainers.map((item, index) => `
+                                <div class="ranking-item">
+                                    <div class="rank-number ${index === 0 ? 'top1' : index === 1 ? 'top2' : index === 2 ? 'top3' : 'other'}">
+                                        ${index + 1}
+                                    </div>
+                                    <div class="symbol-info">
+                                        <div class="symbol-name">${item.symbol}</div>
+                                        <div class="symbol-price">$${item.lastPrice.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}</div>
+                                    </div>
+                                    <div class="symbol-value positive">
+                                        +${item.change24h.toFixed(2)}%
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 하락률 상위 10개
+            if (rankingsData.losers && rankingsData.losers.length > 0) {
+                html += `
+                    <div class="ranking-section" id="losers-section">
+                        <h2 class="ranking-title">📉 하락률 상위 10</h2>
+                        <div class="ranking-list">
+                            ${rankingsData.losers.map((item, index) => `
+                                <div class="ranking-item">
+                                    <div class="rank-number ${index === 0 ? 'top1' : index === 1 ? 'top2' : index === 2 ? 'top3' : 'other'}">
+                                        ${index + 1}
+                                    </div>
+                                    <div class="symbol-info">
+                                        <div class="symbol-name">${item.symbol}</div>
+                                        <div class="symbol-price">$${item.lastPrice.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}</div>
+                                    </div>
+                                    <div class="symbol-value negative">
+                                        ${item.change24h.toFixed(2)}%
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 거래대금 상위 10개
+            if (rankingsData.volume && rankingsData.volume.length > 0) {
+                html += `
+                    <div class="ranking-section" id="volume-section">
+                        <h2 class="ranking-title">💰 거래대금 상위 10</h2>
+                        <div class="ranking-list">
+                            ${rankingsData.volume.map((item, index) => `
+                                <div class="ranking-item">
+                                    <div class="rank-number ${index === 0 ? 'top1' : index === 1 ? 'top2' : index === 2 ? 'top3' : 'other'}">
+                                        ${index + 1}
+                                    </div>
+                                    <div class="symbol-info">
+                                        <div class="symbol-name">${item.symbol}</div>
+                                        <div class="symbol-price">$${item.lastPrice.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}</div>
+                                    </div>
+                                    <div class="symbol-value">
+                                        $${(item.turnover24h / 1000000).toFixed(2)}M
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function showRanking(type) {
+            // 모든 섹션 숨기기
+            document.querySelectorAll('.ranking-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // 모든 탭 버튼 비활성화
+            document.querySelectorAll('.ranking-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 선택한 섹션 표시
+            const section = document.getElementById(`${type}-section`);
+            if (section) {
+                section.classList.add('active');
+            }
+
+            // 선택한 탭 버튼 활성화
+            const tabs = document.querySelectorAll('.ranking-tab');
+            if (type === 'gainers') {
+                tabs[0].classList.add('active');
+            } else if (type === 'losers') {
+                tabs[1].classList.add('active');
+            } else if (type === 'volume') {
+                tabs[2].classList.add('active');
+            }
+
+            // 해당 섹션으로 스크롤
+            setTimeout(() => {
+                if (section) {
+                    section.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }
+            }, 100);
+        }
+
+        // 페이지 로드 시 자동으로 현물 랭킹 로드
+        window.addEventListener('DOMContentLoaded', () => {
+            loadRankings('spot');
+        });
+    </script>
+</body>
+</html>
+

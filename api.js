@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
-import { getPriceByAPI, formatPriceAsText, analyzeInsights } from './index.js';
+import { getPriceByAPI, formatPriceAsText, analyzeInsights, getTopRankings } from './index.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -377,6 +377,25 @@ app.get('/api/insights/:symbol', async (req, res) => {
   }
 });
 
+// API 엔드포인트: 상위 10개 종목 랭킹
+app.get('/api/rankings', async (req, res) => {
+  try {
+    const category = req.query.category || 'spot'; // spot 또는 linear
+    const rankings = await getTopRankings(category);
+    
+    res.json({
+      success: true,
+      category: category,
+      data: rankings
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      error: '서버 오류가 발생했습니다.',
+      message: error.message 
+    });
+  }
+});
+
 // 헬스 체크
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -389,6 +408,7 @@ app.listen(PORT, () => {
   console.log(`   - 선물: http://localhost:${PORT}/api/futures/:symbol`);
   console.log(`   - 전체: http://localhost:${PORT}/api/all/:symbol`);
   console.log(`   - 인사이트: http://localhost:${PORT}/api/insights/:symbol`);
+  console.log(`   - 랭킹: http://localhost:${PORT}/api/rankings`);
   console.log(`   - 슬랙 웹훅: http://localhost:${PORT}/webhook/slack`);
   console.log(`🌐 웹 인터페이스: http://localhost:${PORT}`);
   if (SLACK_WEBHOOK_URL) {

@@ -50,6 +50,81 @@ export async function getPriceByAPI(symbol, category = 'spot') {
   }
 }
 
+// 모든 종목 데이터 가져오기
+export async function getAllTickers(category = 'spot') {
+  try {
+    const response = await axios.get('https://api.bybit.com/v5/market/tickers', {
+      params: {
+        category: category
+        // symbol 파라미터를 생략하면 모든 종목을 가져옴
+      },
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Referer': 'https://www.bybit.com/',
+        'Origin': 'https://www.bybit.com'
+      }
+    });
+    
+    if (response.data && response.data.result && response.data.result.list) {
+      return response.data.result.list.map(ticker => ({
+        symbol: ticker.symbol,
+        lastPrice: parseFloat(ticker.lastPrice),
+        high24h: parseFloat(ticker.highPrice24h),
+        low24h: parseFloat(ticker.lowPrice24h),
+        volume24h: parseFloat(ticker.volume24h),
+        change24h: parseFloat(ticker.price24hPcnt) * 100, // 퍼센트로 변환
+        turnover24h: parseFloat(ticker.volume24h) * parseFloat(ticker.lastPrice) // 거래대금 = 거래량 * 가격
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error(`전체 종목 조회 중 오류 (${category}):`, error.message);
+    return [];
+  }
+}
+
+// 상위 10개 종목 정렬 함수
+export async function getTopRankings(category = 'spot') {
+  try {
+    const tickers = await getAllTickers(category);
+    
+    // USDT 페어만 필터링
+    const usdtTickers = tickers.filter(t => t.symbol.endsWith('USDT'));
+    
+    // 상승률 상위 10개 (양수만, 내림차순)
+    const topGainers = usdtTickers
+      .filter(t => t.change24h > 0)
+      .sort((a, b) => b.change24h - a.change24h)
+      .slice(0, 10);
+    
+    // 하락률 상위 10개 (음수만, 오름차순)
+    const topLosers = usdtTickers
+      .filter(t => t.change24h < 0)
+      .sort((a, b) => a.change24h - b.change24h)
+      .slice(0, 10);
+    
+    // 거래대금 상위 10개 (내림차순)
+    const topVolume = usdtTickers
+      .sort((a, b) => b.turnover24h - a.turnover24h)
+      .slice(0, 10);
+    
+    return {
+      gainers: topGainers,
+      losers: topLosers,
+      volume: topVolume
+    };
+  } catch (error) {
+    console.error('상위 종목 조회 중 오류:', error.message);
+    return {
+      gainers: [],
+      losers: [],
+      volume: []
+    };
+  }
+}
+
 // 가격 정보를 텍스트 형식으로 포맷팅하는 함수 (export)
 export function formatPriceAsText(priceData, categoryName) {
   if (!priceData) {
