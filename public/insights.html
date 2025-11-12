@@ -511,7 +511,7 @@
                     const pos = insights.pricePosition;
                     const adviceClass = pos.level === 'high' ? 'warning' : pos.level === 'low' ? 'opportunity' : 'normal';
                     html += `
-                        <div class="insight-card">
+                        <div class="insight-card" id="first-insight">
                             <h3>📍 지금 가격은 어디쯤인가요?</h3>
                             <div class="insight-item">
                                 <span class="insight-label">하루 중 위치</span>
@@ -699,6 +699,17 @@
 
                 html += '</div>';
                 resultsDiv.innerHTML = html;
+
+                // 첫 번째 인사이트 카드로 스크롤
+                setTimeout(() => {
+                    const firstInsight = document.getElementById('first-insight');
+                    if (firstInsight) {
+                        firstInsight.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'start' 
+                        });
+                    }
+                }, 100);
 
             } catch (error) {
                 loadingDiv.innerHTML = '';
