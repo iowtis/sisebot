@@ -194,69 +194,85 @@
             white-space: nowrap;
         }
 
+        /* 고정 컨트롤 바 */
+        .sticky-controls {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 100;
+            padding: 12px 0;
+            margin: -32px -24px 16px -24px;
+            padding-left: 24px;
+            padding-right: 24px;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
         .category-selector {
             display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 8px;
+            margin-bottom: 12px;
             justify-content: center;
         }
 
         .category-btn {
-            padding: 12px 24px;
-            font-size: 15px;
+            padding: 8px 16px;
+            font-size: 13px;
             background: white;
             color: var(--primary-color);
-            border: 2px solid var(--primary-color);
-            border-radius: 12px;
+            border: 1.5px solid var(--primary-color);
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: var(--shadow-sm);
+            white-space: nowrap;
         }
 
         .category-btn.active {
             background: var(--primary-gradient);
             color: white;
             border-color: transparent;
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-sm);
         }
 
-        .category-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .category-btn:active {
+            transform: scale(0.95);
         }
 
         .ranking-tabs {
             display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
+            gap: 6px;
+            margin-bottom: 0;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .ranking-tab {
-            padding: 12px 20px;
-            font-size: 14px;
+            padding: 8px 14px;
+            font-size: 12px;
             background: white;
             color: var(--primary-color);
-            border: 2px solid var(--primary-color);
-            border-radius: 12px;
+            border: 1.5px solid var(--primary-color);
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: var(--shadow-sm);
+            white-space: nowrap;
         }
 
         .ranking-tab.active {
             background: var(--primary-gradient);
             color: white;
             border-color: transparent;
-            box-shadow: var(--shadow-md);
+            box-shadow: var(--shadow-sm);
         }
 
-        .ranking-tab:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .ranking-tab:active {
+            transform: scale(0.95);
         }
 
         .ranking-section {
@@ -410,7 +426,7 @@
 
         @media (max-width: 768px) {
             .header {
-                padding: 40px 20px 32px;
+                padding: 40px 20px 28px;
             }
 
             h1 {
@@ -422,18 +438,41 @@
                 padding: 28px 20px 36px;
             }
 
+            .sticky-controls {
+                margin: -28px -20px 16px -20px;
+                padding-left: 20px;
+                padding-right: 20px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
             .category-selector {
-                flex-direction: column;
+                gap: 6px;
+                margin-bottom: 10px;
             }
 
             .category-btn {
-                width: 100%;
+                padding: 7px 14px;
+                font-size: 12px;
+                flex: 1;
+                max-width: 120px;
+            }
+
+            .ranking-tabs {
+                gap: 5px;
+            }
+
+            .ranking-tab {
+                padding: 7px 12px;
+                font-size: 11px;
+                flex: 1;
+                min-width: 0;
             }
         }
 
         @media (max-width: 480px) {
             .header {
-                padding: 36px 16px 28px;
+                padding: 36px 16px 24px;
             }
 
             h1 {
@@ -443,6 +482,33 @@
 
             .content {
                 padding: 24px 16px 32px;
+            }
+
+            .sticky-controls {
+                margin: -24px -16px 12px -16px;
+                padding-left: 16px;
+                padding-right: 16px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+            }
+
+            .category-selector {
+                gap: 5px;
+                margin-bottom: 8px;
+            }
+
+            .category-btn {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+
+            .ranking-tabs {
+                gap: 4px;
+            }
+
+            .ranking-tab {
+                padding: 6px 10px;
+                font-size: 10px;
             }
 
             .ranking-list {
@@ -457,7 +523,6 @@
             .symbol-name {
                 font-size: 15px;
             }
-
         }
     </style>
 </head>
@@ -468,15 +533,17 @@
         </div>
         
         <div class="content">
-            <div class="category-selector">
-                <button class="category-btn active" onclick="loadRankings('spot')">현물</button>
-                <button class="category-btn" onclick="loadRankings('linear')">선물</button>
-            </div>
+            <div class="sticky-controls">
+                <div class="category-selector">
+                    <button class="category-btn active" onclick="loadRankings('spot')">현물</button>
+                    <button class="category-btn" onclick="loadRankings('linear')">선물</button>
+                </div>
 
-            <div class="ranking-tabs" id="rankingTabs" style="display: none;">
-                <button class="ranking-tab active" onclick="showRanking('gainers')">📈 상승률</button>
-                <button class="ranking-tab" onclick="showRanking('losers')">📉 하락률</button>
-                <button class="ranking-tab" onclick="showRanking('volume')">💰 거래대금</button>
+                <div class="ranking-tabs" id="rankingTabs" style="display: none;">
+                    <button class="ranking-tab active" onclick="showRanking('gainers')">📈 상승률</button>
+                    <button class="ranking-tab" onclick="showRanking('losers')">📉 하락률</button>
+                    <button class="ranking-tab" onclick="showRanking('volume')">💰 거래대금</button>
+                </div>
             </div>
 
             <div id="error"></div>
