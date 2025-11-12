@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
-import { getPriceByAPI, formatPriceAsText } from './index.js';
+import { getPriceByAPI, formatPriceAsText, analyzeInsights } from './index.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -338,6 +338,45 @@ app.get('/api/exchange-rate', async (req, res) => {
   }
 });
 
+// API 엔드포인트: 인사이트 분석
+app.get('/api/insights/:symbol', async (req, res) => {
+  try {
+    const symbol = req.params.symbol.toUpperCase();
+    const avgPrice = req.query.avgPrice ? parseFloat(req.query.avgPrice) : null;
+    const leverage = req.query.leverage ? parseFloat(req.query.leverage) : null;
+    const targetPrice = req.query.targetPrice ? parseFloat(req.query.targetPrice) : null;
+    
+    const [spotData, futuresData] = await Promise.all([
+      getPriceByAPI(symbol, 'spot'),
+      getPriceByAPI(symbol, 'linear')
+    ]);
+    
+    if (!spotData && !futuresData) {
+      return res.status(404).json({ 
+        error: '가격 정보를 찾을 수 없습니다.',
+        symbol: `${symbol}USDT`
+      });
+    }
+    
+    const insights = analyzeInsights(spotData, futuresData, avgPrice, leverage, targetPrice);
+    
+    res.json({
+      success: true,
+      symbol: `${symbol}USDT`,
+      data: {
+        spot: spotData,
+        futures: futuresData,
+        insights: insights
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      error: '서버 오류가 발생했습니다.',
+      message: error.message 
+    });
+  }
+});
+
 // 헬스 체크
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -349,6 +388,7 @@ app.listen(PORT, () => {
   console.log(`   - 현물: http://localhost:${PORT}/api/price/:symbol`);
   console.log(`   - 선물: http://localhost:${PORT}/api/futures/:symbol`);
   console.log(`   - 전체: http://localhost:${PORT}/api/all/:symbol`);
+  console.log(`   - 인사이트: http://localhost:${PORT}/api/insights/:symbol`);
   console.log(`   - 슬랙 웹훅: http://localhost:${PORT}/webhook/slack`);
   console.log(`🌐 웹 인터페이스: http://localhost:${PORT}`);
   if (SLACK_WEBHOOK_URL) {
